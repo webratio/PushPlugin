@@ -19,6 +19,12 @@ PushNotification.prototype.register = function(successCallback, errorCallback, o
     cordova.exec(successCallback, errorCallback, "PushPlugin", "register", [options]);
 };
 
+// Call this check whether there is a cold-start notification pending
+PushNotification.prototype.hasColdStartNotification = function(successCallback, errorCallback) {
+    if (errorCallback == null) { errorCallback = function() {}}
+    cordova.exec(successCallback, errorCallback, "PushPlugin", "hasColdStartNotification", []);
+};
+
 // Call this to unregister for push notifications
 PushNotification.prototype.unregister = function(successCallback, errorCallback, options) {
     if (errorCallback == null) { errorCallback = function() {}}

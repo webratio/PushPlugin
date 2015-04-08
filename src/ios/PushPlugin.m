@@ -149,6 +149,17 @@
 		[self notificationReceived];	// go ahead and process it
 }
 
+
+- (void)hasColdStartNotification:(CDVInvokedUrlCommand*)command;
+{
+    self.callbackId = command.callbackId;
+    if(self.notificationMessage){
+       [self successWithMessage:@"true"];
+    } else {
+       [self successWithMessage:@"false"];
+    }    
+}
+
 /*
 - (void)isEnabled:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options {
     UIRemoteNotificationType type = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];

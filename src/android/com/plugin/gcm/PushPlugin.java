@@ -24,6 +24,7 @@ import com.google.android.gcm.GCMRegistrar;
 public class PushPlugin extends CordovaPlugin {
     public static final String TAG = "PushPlugin";
 
+    public static final String HAS_COLD_START_NOTIFICATION = "hasColdStartNotification";
     public static final String REGISTER = "register";
     public static final String UNREGISTER = "unregister";
     public static final String EXIT = "exit";
@@ -50,7 +51,11 @@ public class PushPlugin extends CordovaPlugin {
 
         Log.v(TAG, "execute: action=" + action);
 
-        if (REGISTER.equals(action)) {
+        if (HAS_COLD_START_NOTIFICATION.equals(action)) {
+            Log.v(TAG, "checking coldstart notification presence (" + gCachedExtras + ")");
+            result = true;
+            callbackContext.success((gCachedExtras != null) ? "true" : "false");
+        } else if (REGISTER.equals(action)) {
 
             Log.v(TAG, "execute: data=" + data.toString());
 

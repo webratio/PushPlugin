@@ -21,6 +21,10 @@ function createStubs() {
 					return EMULATOR_NOTIFICATION_DEVICE_ID;
 				}
             },
+            hasColdStartNotification: function() {
+                // do nothing
+                return false;
+            }
             unregister: function(options) {
                 log("Unregistered from the messaging service");
             },
