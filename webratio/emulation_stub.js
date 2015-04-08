@@ -24,7 +24,7 @@ function createStubs() {
             hasColdStartNotification: function() {
                 // do nothing
                 return false;
-            }
+            },
             unregister: function(options) {
                 log("Unregistered from the messaging service");
             },
