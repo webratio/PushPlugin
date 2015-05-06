@@ -5,9 +5,9 @@ import android.content.Context;
 
 import com.google.android.gcm.GCMBroadcastReceiver;
 
-/*
- * Implementation of GCMBroadcastReceiver that hard-wires the intent service to be 
- * com.plugin.gcm.GCMIntentService, instead of your_package.GCMIntentService 
+/**
+ * Implementation of GCMBroadcastReceiver that hard-wires the intent service to be com.plugin.gcm.GCMIntentService, instead of
+ * your_package.GCMIntentService.
  */
 public class CordovaGCMBroadcastReceiver extends GCMBroadcastReceiver {
 

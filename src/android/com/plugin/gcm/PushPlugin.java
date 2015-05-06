@@ -17,10 +17,6 @@ import android.util.Log;
 
 import com.google.android.gcm.GCMRegistrar;
 
-/**
- * @author awysocki
- */
-
 public class PushPlugin extends CordovaPlugin {
     public static final String TAG = "PushPlugin";
 
@@ -46,33 +42,21 @@ public class PushPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) {
-
         boolean result = false;
-
         Log.v(TAG, "execute: action=" + action);
-
         if (HAS_COLD_START_NOTIFICATION.equals(action)) {
             Log.v(TAG, "checking coldstart notification presence (" + gCachedExtras + ")");
             result = true;
             callbackContext.success((gCachedExtras != null) ? "true" : "false");
         } else if (REGISTER.equals(action)) {
-
-            Log.v(TAG, "execute: data=" + data.toString());
-
+            Log.v(TAG, "execute registration data=" + data.toString());
             try {
                 JSONObject jo = data.getJSONObject(0);
-
                 gWebView = this.webView;
-                Log.v(TAG, "execute: jo=" + jo.toString());
-
                 gECB = (String) jo.get("ecb");
                 gSenderID = (String) jo.get("senderID");
-
-                Log.v(TAG, "execute: ECB=" + gECB + " senderID=" + gSenderID);
-
                 GCMRegistrar.checkDevice(getApplicationContext());
                 GCMRegistrar.checkManifest(getApplicationContext());
-                GCMIntentService.registerSenderId(gSenderID, getApplicationContext());
                 GCMRegistrar.register(getApplicationContext(), gSenderID);
                 result = true;
                 callbackContext.success();
@@ -81,17 +65,13 @@ public class PushPlugin extends CordovaPlugin {
                 result = false;
                 callbackContext.error(e.getMessage());
             }
-
             if (gCachedExtras != null) {
                 Log.v(TAG, "sending cached extras");
                 sendExtras(gCachedExtras);
                 gCachedExtras = null;
             }
-
         } else if (UNREGISTER.equals(action)) {
-
             GCMRegistrar.unregister(getApplicationContext());
-
             Log.v(TAG, "UNREGISTER");
             result = true;
             callbackContext.success();
@@ -100,25 +80,29 @@ public class PushPlugin extends CordovaPlugin {
             Log.e(TAG, "Invalid action : " + action);
             callbackContext.error("Invalid action : " + action);
         }
-
         return result;
     }
 
-    /*
-     * Sends a json object to the client as parameter to a method which is defined in gECB.
+    /**
+     * Sends a JSON object to the client as parameter to a method which is defined in gECB.
+     * 
+     * @param _json
+     *            the JSON object being sent to the callback.
      */
     public static void sendJavascript(JSONObject _json) {
         String _d = "javascript:" + gECB + "(" + _json.toString() + ")";
         Log.v(TAG, "sendJavascript: " + _d);
-
         if (gECB != null && gWebView != null) {
             gWebView.sendJavascript(_d);
         }
     }
 
-    /*
-     * Sends the pushbundle extras to the client application. If the client application isn't currently active, it is cached for later
+    /**
+     * Sends the push-bundle extras to the client application. If the client application isn't currently active, it is cached for later
      * processing.
+     * 
+     * @param extras
+     *            the bundle extra to register.
      */
     public static void sendExtras(Bundle extras) {
         if (extras != null) {
@@ -141,7 +125,7 @@ public class PushPlugin extends CordovaPlugin {
     public void onPause(boolean multitasking) {
         super.onPause(multitasking);
         gForeground = false;
-        final NotificationManager notificationManager = (NotificationManager) cordova.getActivity().getSystemService(
+        NotificationManager notificationManager = (NotificationManager) cordova.getActivity().getSystemService(
                 Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
@@ -167,13 +151,11 @@ public class PushPlugin extends CordovaPlugin {
         try {
             JSONObject json;
             json = new JSONObject().put("event", "message");
-
             JSONObject jsondata = new JSONObject();
             Iterator<String> it = extras.keySet().iterator();
             while (it.hasNext()) {
                 String key = it.next();
                 Object value = extras.get(key);
-
                 // System data from Android
                 if (key.equals("from") || key.equals("collapse_key")) {
                     json.put(key, value);
@@ -186,10 +168,8 @@ public class PushPlugin extends CordovaPlugin {
                     if (key.equals("message") || key.equals("msgcnt") || key.equals("soundname")) {
                         json.put(key, value);
                     }
-
                     if (value instanceof String) {
                         // Try to figure out if the value is another JSON object
-
                         String strValue = (String) value;
                         if (strValue.startsWith("{")) {
                             try {
@@ -198,8 +178,7 @@ public class PushPlugin extends CordovaPlugin {
                             } catch (Exception e) {
                                 jsondata.put(key, value);
                             }
-                            // Try to figure out if the value is another JSON
-                            // array
+                            // Try to figure out if the value is another JSON array
                         } else if (strValue.startsWith("[")) {
                             try {
                                 JSONArray json2 = new JSONArray(strValue);
@@ -212,11 +191,9 @@ public class PushPlugin extends CordovaPlugin {
                         }
                     }
                 }
-            } // while
+            }
             json.put("payload", jsondata);
-
             Log.v(TAG, "extrasToJSON: " + json.toString());
-
             return json;
         } catch (JSONException e) {
             Log.e(TAG, "extrasToJSON: JSON exception");
